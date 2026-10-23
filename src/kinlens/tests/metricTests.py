@@ -9,6 +9,16 @@ from kinlens.exceptions.metricesExceptions import (
     CosineDistanceUndefined)
 
 
+@pytest.fixture
+def x() -> np.ndarray:
+    return np.array([1.1, 1.2, 1.3, 1.4, 1.5]) 
+
+@pytest.fixture
+def y() -> np.ndarray:
+    return np.array([2.1, 2.2, 2.3, 2.4, 2.5])
+
+
+
 def testEmptyVectorsException():
     x: np.ndarray = np.array([])
     y: np.ndarray = np.array([])
@@ -19,22 +29,17 @@ def testEmptyVectorsException():
         euclidean(x=x, y=y)
 
 
-def testNotSameLengthsVectorsException():
-    x =  np.array([1.1, 1.2, 1.3, 1.4])
-    y =  np.array([2.1, 2.2, 2.3, 2.4, 2.5])
+def testNotSameLengthsVectorsException(x: np.ndarray, y: np.ndarray):
 
     # The vectors must be equal-length.
     with pytest.raises(VectorsLengthMissMatch):
         manhattan = Manhattan()
-        manhattan(x=x, y=y)
+        manhattan(x=x[:-1], y=y)
 
 
-def testmetricEuclideanResult():
+def testmetricEuclideanResult(x: np.ndarray, y: np.ndarray):
 
     euclidean = Euclidean()
-
-    x: np.ndarray = np.array([1.1, 2.1, 3.1, 4.1, 5.1, 6.1])
-    y: np.ndarray = np.array([2.1, 4.1, 6.1, 8.1, 10.1, 12.1])
 
     calculatedRecult: float = euclidean(x=x, y=y)
     originalResult: float = math.sqrt(sum((a - b) ** 2 for a, b in zip(x, y)))
@@ -43,12 +48,9 @@ def testmetricEuclideanResult():
 
 
 
-def testManhattanResult():
+def testManhattanResult(x: np.ndarray, y: np.ndarray):
 
     manhattan = Manhattan()
-
-    x: np.ndarray = np.array([1.1, 2.1, 3.1, 4.1, 5.1, 6.1])
-    y: np.ndarray = np.array([2.1, 4.1, 6.1, 8.1, 10.1, 12.1])
 
     calculatedResult: float = manhattan(x=x, y=y)
     originalResult: float = sum(abs(a - b) for a, b in zip(x, y))
@@ -56,11 +58,8 @@ def testManhattanResult():
     assert calculatedResult == originalResult
 
 
-def testCosineResult():
+def testCosineResult(x: np.ndarray, y: np.ndarray):
     cosine = Cosine()
-
-    x: np.ndarray = np.array([1.1, 2.1, 3.1, 4.1, 5.1, 6.1])
-    y: np.ndarray = np.array([2.1, 4.1, 6.1, 8.1, 10.1, 12.1])
 
     dotProduct = sum(a * b for a, b in zip(x, y))
 
@@ -77,11 +76,9 @@ def testCosineResult():
 
 
     
-def testCosineRejectsZeroVerctors():
+def testCosineRejectsZeroVerctors(y: np.ndarray):
 
-    x: np.ndarray = np.array([0, 0, 0, 0, 0, 0])
-    y: np.ndarray = np.array([0, 4.1, 6.1, 8.1, 10.1, 12.1])
-
+    x = np.zeros_like(y)
     cosine = Cosine()
 
     with pytest.raises(CosineDistanceUndefined):
