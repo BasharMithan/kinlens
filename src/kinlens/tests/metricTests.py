@@ -4,7 +4,7 @@ import numpy as np
 
 
 from kinlens.metrics import Manhattan, Euclidean
-from kinlens.exceptions.matricesExceptions import VectorsLengthMissMatch, EmptyVectorError
+from kinlens.exceptions.metricesExceptions import VectorsLengthMissMatch, EmptyVectorError
 
 
 def testEmptyVectorsException():
@@ -27,7 +27,7 @@ def testNotSameLengthsVectorsException():
         manhattan(x=x, y=y)
 
 
-def testMatricEuclideanResult():
+def testmetricEuclideanResult():
 
     euclidean = Euclidean()
 

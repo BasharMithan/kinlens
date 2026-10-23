@@ -3,7 +3,7 @@ from abc import ABC, abstractmethod
 import math
 import numpy as np
 
-from kinlens.exceptions.matricesExceptions import EmptyVectorError, VectorsLengthMissMatch
+from kinlens.exceptions.metricesExceptions import EmptyVectorError, VectorsLengthMissMatch
 
 
 class DistanceMetric(ABC):
