@@ -1,56 +1,57 @@
 from abc import ABC, abstractmethod
 
-import numpy as np
 import math
+import numpy as np
 
+from kinlens.exceptions.matricesExceptions import EmptyVectorError, VectorsLengthMissMatch
 
 
 class DistanceMetric(ABC):
     "An abstract class for the distance class, `Euclidean`, `Manhattan`, ..."
 
     @abstractmethod
-    def distance(self, x: list[float], y: list[float]) -> float:
+    def distance(self, x: np.ndarray, y: np.ndarray) -> float:
         """Return the distance between two equal-length numeric vectors."""
         ...
 
-    def __call__(self, x: list[float], y: list[float]) -> float:
+    def __call__(self, x: np.ndarray, y: np.ndarray) -> float:
         """Allow instances to be used like functions: ``metric(x, y)``."""
+        self.validate(x=x, y=y)
+
         return self.distance(x=x, y=y)
 
 
-    def validate(self, x: list[float], y: list[float]) -> None:
+    def validate(self, x: np.ndarray, y: np.ndarray) -> None:
 
-        if len(x) != len(y):
-            raise ValueError("Vectors must have the same length.")
+        if x.shape != y.shape:
+            raise VectorsLengthMissMatch()
 
-        if len(x) == 0:
-            raise ValueError("Vector must not be empty.")
+        if x.size == 0:
+            raise EmptyVectorError()
 
 
 
 class Euclidean(DistanceMetric):
     """L2 distance: sqrt(sum((x_i, - y_i)^2))"""
 
-    def distance(self, x: list[float], y: list[float]) -> float:
-        self.validate(x=x, y=y)
+    def distance(self, x: np.ndarray, y: np.ndarray) -> float:
 
-        return math.sqrt(sum((a - b) ** 2 for a, b in zip(x, y)))
+        return float(np.linalg.norm(x - y))
 
 
 class Manhattan(DistanceMetric):
     """L1 distance: sum(|x_1 - y_i|)"""
 
-    def distance(self, x: list[float], y: list[float]) -> float:
-        self.validate(x=x, y=y)
+    def distance(self, x: np.ndarray, y: np.ndarray) -> float:
 
-        return sum(abs(a - b) for a, b in zip(x, y))
+        return float(np.sum(np.abs(x - y)))
 
 
 
 
 if __name__ == "__main__":
-    x = [1.0, 2.0, 3.0]
-    y = [4.0, 6.0, 8.0]
+    x = np.array([1.0, 2.0, 3.0])
+    y = np.array([4.0, 6.0, 8.0])
 
     euclidean = Euclidean()
     manhattan = Manhattan()
