@@ -10,3 +10,9 @@ class VectorsLengthMissMatch(Exception):
     def __init__(self, *args: object) -> None:
         super().__init__(f"The vectors must be length-equal.")
 
+
+
+class CosineDistanceUndefined(Exception):
+    def __init__(self, *args: object) -> None:
+        super().__init__(f"Cosine distance is undefined for zero vectors.")
+
