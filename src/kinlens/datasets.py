@@ -1,16 +1,16 @@
 from dataclasses import dataclass
 
-
+import numpy as np
 
 @dataclass(frozen=True)
 class Dataset:
-    x: list[float]
-    y: list[float]
+    x: np.ndarray
+    y: np.ndarray
 
     features: list[str]
     classTitles: list[str]
 
     name: str
-    images: list[float] | None
+    images: np.ndarray | None
 
 
