@@ -6,6 +6,10 @@ __pycache__/
 # C extensions
 *.so
 
+# Documents
+docs/architecture.md
+docs/layout.txt
+
 # Distribution / packaging
 .Python
 build/
