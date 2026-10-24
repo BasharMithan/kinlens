@@ -1,11 +1,12 @@
 from abc import ABC, abstractmethod
 
-import math
 import numpy as np
 
-from kinlens.exceptions.metricesExceptions import (
-    EmptyVectorError, VectorsLengthMissMatch,
-    CosineDistanceUndefined)
+from kinlens.exceptions.metricsExceptions import (
+    CosineDistanceUndefined,
+    EmptyVectorError,
+    VectorsLengthMissMatch,
+)
 
 
 class DistanceMetric(ABC):

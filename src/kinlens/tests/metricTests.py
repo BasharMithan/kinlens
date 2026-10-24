@@ -1,12 +1,14 @@
-import pytest
 import math
+
 import numpy as np
+import pytest
 
-
-from kinlens.metrics import Manhattan, Euclidean, Cosine
-from kinlens.exceptions.metricesExceptions import (
-    VectorsLengthMissMatch, EmptyVectorError,
-    CosineDistanceUndefined)
+from kinlens.exceptions.metricsExceptions import (
+    CosineDistanceUndefined,
+    EmptyVectorError,
+    VectorsLengthMissMatch,
+)
+from kinlens.metrics import Cosine, Euclidean, Manhattan
 
 
 @pytest.fixture
