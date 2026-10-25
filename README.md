@@ -2,7 +2,6 @@
 
 ![Created Date](https://img.shields.io/github/created-at/BasharMithan/kinlens)
 [![Last commit](https://img.shields.io/github/last-commit/BasharMithan/kinlens)](https://github.com/BasharMithan/kinlens/commits/main)
-
 [![Tests](https://github.com/BasharMithan/kinlens/actions/workflows/tests.yml/badge.svg?branch=main)](https://github.com/BasharMithan/kinlens/actions/workflows/tests.yml)
 
 
