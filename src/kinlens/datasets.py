@@ -20,9 +20,13 @@ class Dataset:
 
 
     def __post_init__(self):
-        assert self.x.ndim == 2
-        assert self.y.ndim == 1
-        assert len(self.x) == len(self.y)
+        if not (self.x.ndim == 2 or self.y.ndim == 2 or len(self.x) == len(self.y) or
+              len(self.features) == self.x.shape[0]):
+            raise ValueError("The input dataset is not valid.")
 
-        assert len(self.features) == self.x.shape[1]
+        # assert self.x.ndim == 2
+        # assert self.y.ndim == 1
+        # assert len(self.x) == len(self.y)
+
+        # assert len(self.features) == self.x.shape[1]
 

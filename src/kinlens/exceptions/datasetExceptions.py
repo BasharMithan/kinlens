@@ -37,3 +37,7 @@ class DuplicatedCSVHeaders(Exception):
         super().__init__("The provided csv file has duplicated headers.")
         
 
+
+class MissingValuesError(Exception):
+    def __init__(self, vector: str) -> None:
+        super().__init__(f"The vector: {vector} has missing values.")

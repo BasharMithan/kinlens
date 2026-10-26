@@ -11,12 +11,19 @@ Developer: Bashar Mithan.
 Date: 2026, 10, 26
 """
 
+from collections.abc import Sequence
 from csv import DictReader
-from typing import Sequence
+from typing import Any
 
 from kinlens.exceptions.datasetExceptions import (
-    NoCSVHeaders, DataLeakageError, DuplicatedCSVHeaders, DuplicatedFeatureColumn,
-    TargetVectorDoesNotExist, FeatureVectorDoesNotExitst)
+    DataLeakageError,
+    DuplicatedCSVHeaders,
+    DuplicatedFeatureColumn,
+    FeatureVectorDoesNotExitst,
+    MissingValuesError,
+    NoCSVHeaders,
+    TargetVectorDoesNotExist,
+)
 
 
 class DatasetValidation:
@@ -26,8 +33,8 @@ class DatasetValidation:
         self.label = label
 
 
-    def validate(self, reader: DictReader) -> None:
-        """Raises the proper exception for the bug.
+    def validateCSV(self, reader: DictReader) -> None:
+        """Raises the proper exception for the CSV issue.
 
         Args:
             reader (DictReader): The CSV reader instance.
@@ -41,9 +48,7 @@ class DatasetValidation:
             DataLeakageError: When the label (y) is in the features (x).
         """
 
-        self.reader = reader
-
-        columns: Sequence[str] | None = self.reader.fieldnames
+        columns: Sequence[str] | None = reader.fieldnames
 
         if columns is None:
             raise NoCSVHeaders()
@@ -68,5 +73,12 @@ class DatasetValidation:
         if self.label in self.features:
             raise DataLeakageError(label=self.label, features=self.features)
 
+    def validateMissingValues(self, dictDataset: dict[str, list[Any]]) -> None:
+        """Raise an error when any CSV column contains a missing value."""
+        missingTokens: set[str] = {"", "nan", "na", "n/a", "null", "none", "?"}
 
-
+        for column, values in dictDataset.items():
+            for cell in values:
+                if cell is None or (
+                    isinstance(cell, str) and cell.strip().casefold() in missingTokens):
+                    raise MissingValuesError(column)

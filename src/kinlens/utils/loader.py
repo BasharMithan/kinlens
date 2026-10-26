@@ -11,15 +11,6 @@ from kinlens.datasets import Dataset
 from kinlens.encode import Encoder
 from kinlens.validation import DatasetValidation
 
-from kinlens.exceptions.datasetExceptions import (
-    DataLeakageError,
-    DuplicatedCSVHeaders,
-    DuplicatedFeatureColumn,
-    FeatureVectorDoesNotExitst,
-    NoCSVHeaders,
-    TargetVectorDoesNotExist,
-)
-
 
 class DatasetBuilder:
     def __init__(self, path: Path, features: list[str], label: str, delimiter: str = ",") -> None:
@@ -35,6 +26,8 @@ class DatasetBuilder:
         zippedPairs = self.readCSV()
 
         dictDataset = self.buildDictDataset(zippedPairs=zippedPairs)
+
+        self.validation.validateMissingValues(dictDataset=dictDataset)
 
         targetFeatures: list[dict[str, list[Any]]] = self.filterFeatures(dictDataset=dictDataset)
 
@@ -57,7 +50,7 @@ class DatasetBuilder:
 
             self.columns: Sequence = reader.fieldnames or []
 
-            self.validation.validate(reader=reader) # Checking the validity of the csv file before parsing.
+            self.validation.validateCSV(reader=reader) # Checking the validity of the csv file before parsing.
 
             # A pair of key, values.
             pairs: list[zip[tuple[str, Any]]] = self.buildPairs(reader=reader)
@@ -179,6 +172,4 @@ if __name__ == "__main__":
     builder = DatasetBuilder(path=file, features=["feature_2", "feature_1"], label="target")
     dataset = builder.build()
     print(dataset)
-
-
 
