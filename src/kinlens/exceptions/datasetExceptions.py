@@ -21,7 +21,7 @@ class FeatureVectorDoesNotExitst(Exception):
 
 
 class DuplicatedFeatureColumn(Exception):
-    def __int__(self, *args: object) -> None:
+    def __init__(self, *args: object) -> None:
         super().__init__("You inputed a column twice. Please remove the duplicated column name.")
 
 

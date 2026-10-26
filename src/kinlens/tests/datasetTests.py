@@ -5,18 +5,21 @@ import pytest
 from kinlens.exceptions.datasetExceptions import *
 from kinlens.utils.loader import DatasetBuilder
 
+@pytest.fixture
+def samplesPath() -> Path:
+    return Path(__file__).parent.parent / "samples"
 
 @pytest.fixture
-def csvFile() -> Path:
-    return Path("src/kinlens/samples/sample.csv")
+def csvFile(samplesPath) -> Path:
+    return samplesPath / "sample.csv"
 
 @pytest.fixture
-def noHeaderCSVFile() -> Path:
-    return Path("src/kinlens/samples/no-header.csv")
+def noHeaderCSVFile(samplesPath) -> Path:
+    return samplesPath / "no-header.csv" 
 
 @pytest.fixture
-def duplicatedHeader() -> Path:
-    return Path("src/kinlens/samples/duplicated.csv")
+def duplicatedHeader(samplesPath) -> Path:
+    return samplesPath / "duplicated.csv" 
 
 
 
@@ -98,3 +101,7 @@ def testBuildingDataset(csvFile):
     assert builder.y.tolist() == [0, 1, 0]
     assert builder.classes == ["A", "B"]
     assert builder.name == "sample"
+
+
+
+print()

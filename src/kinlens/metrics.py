@@ -49,7 +49,6 @@ class Manhattan(DistanceMetric):
 
         return float(np.sum(np.abs(x - y)))
 
-# THis is an edit.
 
 class Cosine(DistanceMetric):
     """Measures the orientation or angle between two non-zero vectors."""

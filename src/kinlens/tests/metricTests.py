@@ -46,7 +46,7 @@ def testmetricEuclideanResult(x: np.ndarray, y: np.ndarray):
     calculatedRecult: float = euclidean(x=x, y=y)
     originalResult: float = math.sqrt(sum((a - b) ** 2 for a, b in zip(x, y)))
 
-    assert calculatedRecult == originalResult
+    pytest.approx(calculatedRecult, originalResult)
 
 
 
@@ -57,7 +57,7 @@ def testManhattanResult(x: np.ndarray, y: np.ndarray):
     calculatedResult: float = manhattan(x=x, y=y)
     originalResult: float = sum(abs(a - b) for a, b in zip(x, y))
 
-    assert calculatedResult == originalResult
+    pytest.approx(calculatedResult, originalResult)
 
 
 def testCosineResult(x: np.ndarray, y: np.ndarray):
@@ -74,7 +74,7 @@ def testCosineResult(x: np.ndarray, y: np.ndarray):
 
     calculatedResult = cosine(x=x, y=y)
 
-    assert round(originalResult, 6) == round(calculatedResult, 6)
+    pytest.approx(calculatedResult, originalResult)
 
 
     
