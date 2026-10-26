@@ -1,1 +1,1 @@
-from kinlens.validation.datasets import DatasetValidation
+from kinlens.validation.datasets import DatasetValidation as DatasetValidation

@@ -5,6 +5,7 @@ import pytest
 from kinlens.exceptions.datasetExceptions import *
 from kinlens.utils.loader import DatasetBuilder
 
+
 @pytest.fixture
 def samplesPath() -> Path:
     return Path(__file__).parent.parent / "samples"
@@ -19,7 +20,11 @@ def noHeaderCSVFile(samplesPath) -> Path:
 
 @pytest.fixture
 def duplicatedHeader(samplesPath) -> Path:
-    return samplesPath / "duplicated.csv" 
+    return samplesPath / "duplicated.csv"
+
+@pytest.fixture
+def nanCSV(samplesPath) -> Path:
+    return samplesPath / "nan.csv"
 
 
 
@@ -88,8 +93,6 @@ def testDatasetRejectsDuplicatedCSVHeaders(duplicatedHeader):
 
 
 
-
-
 def testBuildingDataset(csvFile):
 
     builder = DatasetBuilder(
@@ -103,5 +106,44 @@ def testBuildingDataset(csvFile):
     assert builder.name == "sample"
 
 
+def testDatasetRejectsNanValues(nanCSV):
+    builder = DatasetBuilder(
+        path=nanCSV,
+        features=["feature_1", "feature_2"],
+        label="target"
+    )
 
-print()
+    with pytest.raises(MissingValuesError):
+        builder.build()
+
+
+def testDatasetRejectsMissingValuesInUnusedCSVColumn(tmp_path: Path):
+    csvFile = tmp_path / "missing-unused-column.csv"
+    csvFile.write_text(
+        "feature_1,target,unused\n0.2,A,ok\n0.4,B,NA\n",
+        encoding="utf-8",
+    )
+    builder = DatasetBuilder(
+        path=csvFile,
+        features=["feature_1"],
+        label="target",
+    )
+
+    with pytest.raises(MissingValuesError, match="unused"):
+        builder.build()
+
+
+def testDatasetRejectsMissingCellsInShortCSVRows(tmp_path: Path):
+    csvFile = tmp_path / "short-row.csv"
+    csvFile.write_text(
+        "feature_1,target,unused\n0.2,A,ok\n0.4,B\n",
+        encoding="utf-8",
+    )
+    builder = DatasetBuilder(
+        path=csvFile,
+        features=["feature_1"],
+        label="target",
+    )
+
+    with pytest.raises(MissingValuesError, match="unused"):
+        builder.build()
