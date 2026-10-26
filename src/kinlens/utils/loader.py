@@ -8,6 +8,9 @@ from typing import Any
 import numpy as np
 
 from kinlens.datasets import Dataset
+from kinlens.encode import Encoder
+from kinlens.validation import DatasetValidation
+
 from kinlens.exceptions.datasetExceptions import (
     DataLeakageError,
     DuplicatedCSVHeaders,
@@ -24,6 +27,8 @@ class DatasetBuilder:
         self.delimiter = delimiter
         self.features = features
         self.label = label
+        self.validation = DatasetValidation(features=self.features, label=self.label) 
+        
 
 
     def build(self) -> Dataset:
@@ -52,7 +57,7 @@ class DatasetBuilder:
 
             self.columns: Sequence = reader.fieldnames or []
 
-            self.validate(reader=reader) # Checking the validity of the csv file before parsing.
+            self.validation.validate(reader=reader) # Checking the validity of the csv file before parsing.
 
             # A pair of key, values.
             pairs: list[zip[tuple[str, Any]]] = self.buildPairs(reader=reader)
@@ -87,43 +92,6 @@ class DatasetBuilder:
         vectors: list[Any] = [dictDataset[name] for name in self.features]
 
         return vectors
-
-
-
-    def validate(self, reader: DictReader) -> None:
-
-        if reader.fieldnames is None:
-            raise NoCSVHeaders()
-
-        if len(set(reader.fieldnames)) != len(reader.fieldnames):
-            raise DuplicatedCSVHeaders()
-
-        self.checkFeatureColumns()        
-
-        if len(set(self.features)) != len(self.features):
-            raise DuplicatedFeatureColumn()
-
-        if self.label not in self.columns:
-            raise TargetVectorDoesNotExist(targetVector=self.label)
-
-
-        if self.label in self.features:
-            raise DataLeakageError(self.label, self.features)
-
-
-
-
-    def checkFeatureColumns(self) -> None:
-        """Checks if the passed features exist in the columns of the csv file."""
-
-        featuresSet: set[str] = set(self.features)
-        columnsSet: set[str] = set(self.columns)
-
-        wrongFeatures: set[str] = featuresSet - columnsSet
-
-        if len(wrongFeatures) > 0:
-            raise FeatureVectorDoesNotExitst(wrongFeatures)
-
 
 
 
@@ -187,7 +155,7 @@ class DatasetBuilder:
 
 
         x: np.ndarray = np.ascontiguousarray(np.array(features).astype(float).T)
-        y, encodingMap, _ = self.encodeLabels(labels=np.array(target))
+        y, encodingMap, _ = Encoder.encodeLabels(labels=np.array(target))
         classes: list[str] = [key for key in encodingMap]
 
         dataset: Dataset = Dataset(
@@ -203,23 +171,6 @@ class DatasetBuilder:
 
 
 
-    def encodeLabels(self, labels: np.ndarray):
-        """
-        Convert categorical labels to integer codes.
-
-        Returns:
-            encoded: np.ndarray of integers
-            labelToCode: dict mapping original label -> integer
-            codeToLabel: dict mapping integer -> original label
-        """
-
-        uniqueLabels = np.unique(labels)
-
-        labelToCode = {str(label): i for i, label in enumerate(uniqueLabels)}
-        codeToLabel = {i: str(label) for label, i in labelToCode.items()}
-
-        encoded = np.array([labelToCode[label] for label in labels], dtype=int)
-        return encoded, labelToCode, codeToLabel
 
 
         
