@@ -3,6 +3,7 @@
 import numpy as np
 
 from kinlens.datasets import Dataset
+from kinlens.exceptions.searchExceptions import NotFittedError
 from kinlens.metrics import DistanceMetric
 
 
@@ -31,7 +32,7 @@ class SearchValidation:
     def ensureFitted(features: np.ndarray | None) -> np.ndarray:
 
         if features is None:
-            raise ValueError("The neighbor searcher is not fitted. Call fit() first.")
+            raise NotFittedError()
 
         else: return features
 
@@ -65,8 +66,8 @@ class SearchValidation:
     @staticmethod       
     def validateK(k: int | np.integer, features: np.ndarray) -> int | np.integer:
 
-        if not isinstance(k, np.integer) or isinstance(k, bool):
-            raise ValueError(f"K must be an integer; got: {type(k).__name__}")
+        if not isinstance(k, np.integer | int) or isinstance(k, bool):
+            raise TypeError(f"K must be an integer; got: {type(k).__name__}")
 
 
         if not 1 <= k <= features.shape[0]:
@@ -78,8 +79,8 @@ class SearchValidation:
     @staticmethod
     def validateQuery(q: np.ndarray, features: np.ndarray) -> np.ndarray:
 
-        if q.ndim != 2 and q.shape == (1, features.shape[1]):
-            q.reshape(-1)
+        if q.ndim == 2 and q.shape[0] == 1:
+            q = q.reshape(-1)
 
         if q.ndim != 1:
             raise ValueError(f"A query must be 1-D array with shape: ({features.shape[1]},); "

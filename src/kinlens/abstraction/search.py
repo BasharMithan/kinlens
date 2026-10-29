@@ -7,14 +7,13 @@ Date: 2026, 10, 26
 
 
 from abc import ABC, abstractmethod
-from typing import Any
 
 import numpy as np
 
+from kinlens.abstraction.metric import DistanceMetric
 from kinlens.datasets import Dataset
-from kinlens.metrics import DistanceMetric, Manhattan
 from kinlens.models.search import SearchResult
-from kinlens.validation.search import SearchValidation
+from kinlens.validation import SearchValidation
 
 
 class Search(ABC):
@@ -58,11 +57,12 @@ class Search(ABC):
 
     @property
     def nSamples(self) -> np.integer:
-        return self.x.shape[1]
+        return self.x.shape[0] #type: ignore
 
 
+    @property
     def nFeatures(self) -> np.integer:
-        return self.x.shape[0]
+        return self.x.shape[1] #type: ignore
         
 
 
@@ -80,7 +80,7 @@ class Search(ABC):
 
         Raises:
             NotFittedError: If the searcher has not been fitted.
-            ValueError: If the query or ``k`` is invalid.
+            TypeError: If the query or ``k`` is invalid.
         """
 
         x = SearchValidation.ensureFitted(self.x)
@@ -150,49 +150,8 @@ class Search(ABC):
         ...
 
 
-class BruteForseSearch(Search):
-    def __init__(self, metric: DistanceMetric) -> None:
-        super().__init__(metric)
-
-    def findNeighbors(self, query: np.ndarray[tuple[Any, ...], np.dtype[Any]], k: int | np.integer):
-
-        x = SearchValidation.ensureFitted(self.x)
-
-        distances = np.array([self.metric.distance(x=sample, y=query) for sample in x], dtype=np.float64)
-        candidatesIndices = np.argpartition(distances, k - 1)[:k]
-        order = np.argsort(distances[candidatesIndices], kind="stable")
-
-        neighborDistances = distances[order]
-
-        return candidatesIndices, neighborDistances
-
-
-    def buildIndex(self) -> None:
-        return None
-
 
     
     
 
 
-if __name__ == "__main__":
-    import sys
-    from pathlib import Path
-
-    from kinlens.utils.loader import DatasetBuilder
-
-    
-
-    sys.path.append("..")
-
-    path = Path(__file__).resolve().parents[3] / "src" / "kinlens" / "samples" / "sample.csv"
-
-    builder = DatasetBuilder(path=path, features=["feature_1", "feature_2"], label="target")
-    dataset = builder.build()
-
-    
-    st = BruteForseSearch(metric=Manhattan())
-    searcher = st.fit(data=dataset)
-
-    q = np.array([6.0, 0.3])  
-    result = searcher.query(q, k=np.int64(2))

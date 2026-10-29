@@ -1,1 +1,2 @@
 from kinlens.validation.datasets import DatasetValidation as DatasetValidation
+from kinlens.validation.search import SearchValidation as SearchValidation
