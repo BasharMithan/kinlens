@@ -86,7 +86,7 @@ class Search(ABC):
         x = SearchValidation.ensureFitted(self.x)
 
         q = SearchValidation.validateQuery(q=q, features=x)
-        k = SearchValidation.validateK(k, x[0]) 
+        k = SearchValidation.validateK(k, x) 
 
         indices, distances = self.findNeighbors(q, k)
 
