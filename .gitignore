@@ -9,6 +9,7 @@ __pycache__/
 # Documents
 docs/architecture.md
 docs/layout.txt
+docs/todo.md
 
 # Distribution / packaging
 .Python
