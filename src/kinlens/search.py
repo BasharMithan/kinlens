@@ -32,7 +32,7 @@ if __name__ == "__main__":
     import sys
     from pathlib import Path
 
-    from kinlens.utils.loader import DatasetBuilder
+    from kinlens.utils.dataset import DatasetBuilder
 
     
 

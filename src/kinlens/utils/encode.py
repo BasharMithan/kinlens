@@ -10,7 +10,7 @@ Date: 2026, 10, 26
 import numpy as np
 
 
-class Encoder:
+class ClassEncoder:
 
     @staticmethod    
     def encodeLabels(labels: np.ndarray):

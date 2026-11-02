@@ -3,7 +3,7 @@ from pathlib import Path
 import pytest
 
 from kinlens.exceptions.datasetExceptions import *
-from kinlens.utils.loader import DatasetBuilder
+from kinlens.utils.dataset import DatasetBuilder
 
 
 @pytest.fixture
@@ -147,3 +147,8 @@ def testDatasetRejectsMissingCellsInShortCSVRows(tmp_path: Path):
 
     with pytest.raises(MissingValuesError, match="unused"):
         builder.build()
+
+
+
+def testDatasetRejectsNotExistFile(samplesPath: Path):
+    ...

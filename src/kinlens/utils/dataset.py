@@ -8,7 +8,7 @@ from typing import Any
 import numpy as np
 
 from kinlens.datasets import Dataset
-from kinlens.encode import Encoder
+from kinlens.utils.encode import ClassEncoder
 from kinlens.validation import DatasetValidation
 
 
@@ -148,7 +148,7 @@ class DatasetBuilder:
 
 
         x: np.ndarray = np.ascontiguousarray(np.array(features).astype(float).T)
-        y, encodingMap, _ = Encoder.encodeLabels(labels=np.array(target))
+        y, encodingMap, _ = ClassEncoder.encodeLabels(labels=np.array(target))
         classes: list[str] = [key for key in encodingMap]
 
         dataset: Dataset = Dataset(
