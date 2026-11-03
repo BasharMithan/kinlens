@@ -3,6 +3,7 @@ import numpy as np
 
 from kinlens.abstraction.search import Search
 from kinlens.metrics import DistanceMetric, Manhattan
+from kinlens.models.search import SearchResult
 from kinlens.validation import SearchValidation
 
 
@@ -10,7 +11,7 @@ class BruteForseSearch(Search):
     def __init__(self, metric: DistanceMetric) -> None:
         super().__init__(metric)
 
-    def findNeighbors(self, query: np.ndarray, k: int | np.integer) -> tuple[np.ndarray, np.ndarray]:
+    def findNeighbors(self, query: np.ndarray, k: int | np.integer) -> SearchResult:
 
         x = SearchValidation.ensureFitted(self.x)
 
@@ -20,7 +21,7 @@ class BruteForseSearch(Search):
 
         neighborDistances = candidatesIndices[order]
 
-        return neighborDistances, distances[neighborDistances]
+        return SearchResult(indices=distances[neighborDistances], distances=neighborDistances)
 
 
     def buildIndex(self) -> None:

@@ -88,9 +88,7 @@ class Search(ABC):
         q = SearchValidation.validateQuery(q=q, features=x)
         k = SearchValidation.validateK(k, x) 
 
-        indices, distances = self.findNeighbors(q, k)
-
-        return SearchResult(indices=indices, distances=distances)
+        return self.findNeighbors(q, k)
 
 
 
@@ -122,10 +120,10 @@ class Search(ABC):
 
 
         for row, query in enumerate(queries):
-            rowIndex, rowDistance = self.findNeighbors(query, k)
+            results = self.findNeighbors(query, k)
 
-            indices[row] = rowIndex
-            distances[row] = rowDistance
+            indices[row] = results.indices
+            distances[row] = results.distances
 
         return SearchResult(indices=indices, distances=distances)
 
@@ -136,7 +134,7 @@ class Search(ABC):
 
 
     @abstractmethod
-    def findNeighbors(self, query: np.ndarray, k: int | np.integer) -> tuple[np.ndarray, np.ndarray]:
+    def findNeighbors(self, query: np.ndarray, k: int | np.integer) -> SearchResult:
         """Return neighbor indices and distances for one query.
 
         Args:

@@ -1,9 +1,8 @@
 
-from typing import Any
-
 from numpy import ndarray, ones, float64, power
 
 from kinlens.abstraction.voting import Voting
+from kinlens.models.search import SearchResult
 
 
 class Uniform(Voting):
@@ -14,17 +13,17 @@ class Uniform(Voting):
         return "Uniform"
 
 
-    def weight(self, distances: ndarray) -> ndarray:
+    def weight(self, result: SearchResult) -> ndarray:
         """Return equal weights for every neighbor.
 
         Args:
-            distances: Neighbor distances with shape ``(k,)``.
+            result: Neighbor indices and distances from a search.
 
         Returns:
-            An array of ones with shape ``(k,)``.
+            An array of ones matching ``result.distances``.
         """
 
-        return ones(distances.shape[0], dtype=float64)
+        return ones(result.distances.shape, dtype=float64)
 
 
 
@@ -68,14 +67,40 @@ class InverseDistance(Voting):
         """Return the strategy name."""
         return f"inverse-distance-p{self.power}"
 
-    def weights(self, distances: ndarray) -> ndarray:
+    def weight(self, result: SearchResult) -> ndarray:
         """Compute inverse-distance weights.
 
         Args:
-            distances: Neighbor distances with shape ``(k,)``.
+            result: Neighbor indices and distances from a search.
 
         Returns:
-            Non-negative finite weights with shape ``(k,)``.
+            Non-negative finite weights matching ``result.distances``.
         """
+
+        distances = result.distances
         adjusted = distances + self.epsilon
         return 1.0 / power(adjusted, self.power)
+
+
+
+if __name__ == "__main__":
+    import numpy as np
+    from kinlens.utils.dataset import DatasetBuilder
+    from kinlens.search import BruteForseSearch
+    from pathlib import Path
+    from kinlens.metrics import Euclidean
+    from kinlens.voting import InverseDistance
+
+
+    path = Path(__file__).parent.parent / "kinlens" / "samples" / "sample-larger.csv"
+    builder = DatasetBuilder(path, features=["feature_1", "feature_2"], label="target")
+    dataset = builder.build()
+    searcher = BruteForseSearch(metric=Euclidean())
+    searcher.fit(dataset)
+    searchResults = searcher.findNeighbors(query=np.array([0.2, 4.1]), k=3)
+    print(searchResults)
+
+    voting = InverseDistance()
+
+    print(voting.weight(searchResults))
+
