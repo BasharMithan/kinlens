@@ -12,12 +12,14 @@ Developer: Bashar Mithan
 import numpy as np
 from abc import ABC, abstractmethod
 
+from kinlens.models.search import SearchResult
+
 
 class Voting(ABC):
-    """Convert neighbor distances into vote weights.
+    """Convert search results into vote weights.
 
-    A voting strategy receives distances sorted from nearest to
-    farthest and returns one non-negative weight per neighbor.
+    A voting strategy receives a search result and returns one
+    non-negative weight per neighbor.
     """ 
 
     @property
@@ -29,18 +31,17 @@ class Voting(ABC):
 
 
     @abstractmethod
-    def weight(self, distances: np.ndarray) -> np.ndarray:
+    def weight(self, result: SearchResult) -> np.ndarray:
         """Compute a vote weight for each neighbor.
 
         Args:
-            distances: Neighbor distances with shape ``(k,)``, sorted
-                in ascending order.
+            result: Neighbor indices and sorted distances from a search.
 
         Returns:
-            Non-negative finite weights with shape ``(k,)``.
+            Non-negative finite weights with the same shape as
+            ``result.distances``.
         """
         ...
-
 
 
 
