@@ -19,9 +19,9 @@ class BruteForseSearch(Search):
         candidatesIndices = np.argpartition(distances, k - 1)[:k]
         order = np.argsort(distances[candidatesIndices], kind="stable")
 
-        neighborDistances = candidatesIndices[order]
+        neighborIndices = candidatesIndices[order]
 
-        return SearchResult(indices=neighborDistances, distances=distances[neighborDistances])
+        return SearchResult(indices=neighborIndices, distances=distances[neighborIndices])
 
 
     def buildIndex(self) -> None:
