@@ -21,7 +21,7 @@ class BruteForseSearch(Search):
 
         neighborDistances = candidatesIndices[order]
 
-        return SearchResult(indices=distances[neighborDistances], distances=neighborDistances)
+        return SearchResult(indices=neighborDistances, distances=distances[neighborDistances])
 
 
     def buildIndex(self) -> None:
