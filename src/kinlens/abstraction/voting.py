@@ -12,9 +12,8 @@ Developer: Bashar Mithan
 
 from abc import ABC, abstractmethod
 
-import numpy as np
-
 from kinlens.models.search import SearchResult
+from kinlens.models.voting import VotingResult
 
 
 class Voting(ABC):
@@ -33,7 +32,7 @@ class Voting(ABC):
 
 
     @abstractmethod
-    def weight(self, result: SearchResult) -> np.ndarray:
+    def weight(self, result: SearchResult) -> VotingResult:
         """Compute a vote weight for each neighbor.
 
         Args:

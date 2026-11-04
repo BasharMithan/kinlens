@@ -1,8 +1,9 @@
 
-from numpy import float64, ndarray, ones, power
+from numpy import float64, ones, power
 
 from kinlens.abstraction.voting import Voting
 from kinlens.models.search import SearchResult
+from kinlens.models.voting import VotingResult
 
 
 class Uniform(Voting):
@@ -13,7 +14,7 @@ class Uniform(Voting):
         return "Uniform"
 
 
-    def weight(self, result: SearchResult) -> ndarray:
+    def weight(self, result: SearchResult) -> VotingResult:
         """Return equal weights for every neighbor.
 
         Args:
@@ -23,7 +24,8 @@ class Uniform(Voting):
             An array of ones matching ``result.distances``.
         """
 
-        return ones(result.distances.shape, dtype=float64)
+        weights = ones(result.distances.shape, dtype=float64)
+        return VotingResult(indices=result.indices, distances=result.distances, weights=weights)
 
 
 
@@ -67,7 +69,7 @@ class InverseDistance(Voting):
         """Return the strategy name."""
         return f"inverse-distance-p{self.power}"
 
-    def weight(self, result: SearchResult) -> ndarray:
+    def weight(self, result: SearchResult) -> VotingResult:
         """Compute inverse-distance weights.
 
         Args:
@@ -79,7 +81,9 @@ class InverseDistance(Voting):
 
         distances = result.distances
         adjusted = distances + self.epsilon
-        return 1.0 / power(adjusted, self.power)
+        weights = 1.0 / power(adjusted, self.power)
+
+        return VotingResult(indices=result.indices, distances=result.distances, weights=weights)
 
 
 
@@ -108,7 +112,7 @@ if __name__ == "__main__":
     voting = InverseDistance()
 
 
-    weights = voting.weight(searchResults)
+    votingResult = voting.weight(searchResults)
 
-    print(VotingResult(indices=searchResults.indices, distances=searchResults.distances, weights=weights))
+    print(votingResult)
 
