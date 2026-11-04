@@ -87,32 +87,4 @@ class InverseDistance(Voting):
 
 
 
-if __name__ == "__main__":
-    from pathlib import Path
-
-    import numpy as np
-
-    from kinlens.metrics import Euclidean
-    from kinlens.models.voting import VotingResult
-    from kinlens.search import BruteForseSearch
-    from kinlens.utils.dataset import DatasetBuilder
-    from kinlens.voting import InverseDistance
-
-
-    path = Path(__file__).parent.parent / "kinlens" / "samples" / "sample-larger.csv"
-    builder = DatasetBuilder(path, features=["feature_1", "feature_2"], label="target")
-    dataset = builder.build()
-    print(dataset)
-    print(len(dataset.y), len(dataset.x))
-    searcher = BruteForseSearch(metric=Euclidean())
-    searcher.fit(dataset)
-    searchResults = searcher.findNeighbors(query=np.array([0.2, 4.1]), k=3)
-    print(searchResults)
-
-    voting = InverseDistance()
-
-
-    votingResult = voting.weight(searchResults)
-
-    print(votingResult)
 
