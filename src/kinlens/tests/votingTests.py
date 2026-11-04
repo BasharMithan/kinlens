@@ -16,7 +16,7 @@ def testUniformReceivesSearchResult():
         distances=np.array([0.5, 1.0]),
     )
 
-    weights = Uniform().weight(result)
+    weights = Uniform().weight(result).weights
 
     np.testing.assert_array_equal(weights, np.array([1.0, 1.0]))
 
@@ -27,7 +27,7 @@ def testUniformReturnsOnesForBatchedSearchResult():
         distances=np.array([[0.5, 1.0], [1.5, 2.0]]),
     )
 
-    weights = Uniform().weight(result)
+    weights = Uniform().weight(result).weights
 
     np.testing.assert_array_equal(weights, np.ones((2, 2)))
 
@@ -38,7 +38,7 @@ def testInverseDistanceReceivesSearchResult():
         distances=np.array([0.5, 1.0]),
     )
 
-    weights = InverseDistance(epsilon=0.1).weight(result)
+    weights = InverseDistance(epsilon=0.1).weight(result).weights
 
     np.testing.assert_allclose(weights, np.array([1 / 0.6, 1 / 1.1]))
 
@@ -49,7 +49,7 @@ def testInverseDistanceUsesConfiguredPower():
         distances=np.array([0.5, 1.0]),
     )
 
-    weights = InverseDistance(power=2, epsilon=0.1).weight(result)
+    weights = InverseDistance(power=2, epsilon=0.1).weight(result).weights
 
     np.testing.assert_allclose(weights, np.array([1 / 0.6**2, 1 / 1.1**2]))
 
@@ -60,7 +60,7 @@ def testInverseDistanceWithZeroPowerReturnsUnitWeights():
         distances=np.array([0.5, 1.0]),
     )
 
-    weights = InverseDistance(power=0).weight(result)
+    weights = InverseDistance(power=0).weight(result).weights
 
     np.testing.assert_array_equal(weights, np.ones(2))
 
@@ -72,7 +72,7 @@ def testInverseDistanceReturnsFiniteWeightForZeroDistance():
     )
     voting = InverseDistance(epsilon=0.1)
 
-    weights = voting.weight(result)
+    weights = voting.weight(result).weights
 
     np.testing.assert_allclose(weights, np.array([10.0]))
     assert np.all(np.isfinite(weights))
@@ -100,8 +100,8 @@ def testVotingPreservesBatchedSearchResultShape():
         distances=np.array([[0.5, 1.0], [1.5, 2.0]]),
     )
 
-    uniformWeights = Uniform().weight(result)
-    inverseDistanceWeights = InverseDistance(epsilon=0.1).weight(result)
+    uniformWeights = Uniform().weight(result).weights
+    inverseDistanceWeights = InverseDistance(epsilon=0.1).weight(result).weights
 
     assert uniformWeights.shape == result.distances.shape
     assert inverseDistanceWeights.shape == result.distances.shape
