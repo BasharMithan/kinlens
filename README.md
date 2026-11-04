@@ -52,11 +52,11 @@ query = np.array([0.2, 0.1])
 
 search = BruteForseSearch(metric=Euclidean()).fit(training_features)
 result = search.query(query, k=2)
-weights = InverseDistance().weight(result)
+votes = InverseDistance().weight(result)
 
-print(result.indices)    # indices into training_features
-print(result.distances)  # corresponding distances, nearest first
-print(weights)           # one weight per returned neighbor
+print(votes.indices)    # indices into training_features
+print(votes.distances)  # corresponding distances, nearest first
+print(votes.weights)    # one weight per returned neighbor
 ```
 
 For CSV data, use `DatasetBuilder` and pass the resulting `Dataset` to
