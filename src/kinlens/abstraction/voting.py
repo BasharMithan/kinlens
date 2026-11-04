@@ -2,15 +2,17 @@
 Class: Voting
 
 Description: Voting is the step that turns the k neighbors found by the searcher into a final class prediction.
-The searcher says, “these are the closest training samples”; voting says, “given their labels and distances, which class wins?”
+The searcher says, “these are the closest training samples”; voting says, “given their labels and distances,
+which class wins?”
 
 Date: 2026/11/02
 
 Developer: Bashar Mithan
 """
 
-import numpy as np
 from abc import ABC, abstractmethod
+
+import numpy as np
 
 from kinlens.models.search import SearchResult
 
