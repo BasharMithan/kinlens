@@ -6,7 +6,7 @@
 [![Last commit](https://img.shields.io/github/last-commit/BasharMithan/kinlens)](https://github.com/BasharMithan/Kinlens/commits/main)
 [![Tests](https://github.com/BasharMithan/kinlens/actions/workflows/tests.yml/badge.svg?branch=main)](https://github.com/BasharMithan/Kinlens/actions/workflows/tests.yml)
 
-<img src="docs/kinlens-logo.svg" alt="Kinlens logo">
+![Kinlens logo](./docs/kinlens-logo.svg)
 
 
 Kinlens is an educational Python/NumPy project exploring the building blocks
