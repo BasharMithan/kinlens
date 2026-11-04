@@ -1,13 +1,20 @@
 # Kinlens
 
+<div align="center">
+
 [![Created Date](https://img.shields.io/github/created-at/BasharMithan/kinlens)](https://github.com/BasharMithan/Kinlens)
 [![Last commit](https://img.shields.io/github/last-commit/BasharMithan/kinlens)](https://github.com/BasharMithan/Kinlens/commits/main)
 [![Tests](https://github.com/BasharMithan/kinlens/actions/workflows/tests.yml/badge.svg?branch=main)](https://github.com/BasharMithan/Kinlens/actions/workflows/tests.yml)
+
+<img src="docs/kinlens-logo.svg" alt="Kinlens logo">
+
 
 Kinlens is an educational Python/NumPy project exploring the building blocks
 of nearest-neighbor learning. It currently provides CSV dataset loading,
 Euclidean, Manhattan, and cosine distances, brute-force nearest-neighbor
 search, and uniform and inverse-distance voting weights.
+
+</div>
 
 **Kinlens is not yet a complete K-nearest-neighbor classifier.** It does not
 currently aggregate neighbor votes into class predictions, provide prediction
