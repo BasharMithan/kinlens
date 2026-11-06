@@ -3,8 +3,6 @@ from dataclasses import dataclass
 import numpy as np
 
 
-
-
 @dataclass
 class ClassScore:
     classes: np.ndarray

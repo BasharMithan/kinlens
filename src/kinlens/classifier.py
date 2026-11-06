@@ -7,21 +7,15 @@ import pprint
 
 import numpy as np
 
-from kinlens.validation import DatasetValidation
 from kinlens.abstraction.metric import DistanceMetric
 from kinlens.abstraction.search import Search
 from kinlens.abstraction.voting import Voting
-
-from kinlens.metrics import Euclidean, Cosine, Manhattan
-from kinlens.search import BruteForseSearch
-from kinlens.voting import Uniform, InverseDistance
-
 from kinlens.datasets import Dataset
+from kinlens.metrics import Euclidean
+from kinlens.models.classifier import ClassScore
 from kinlens.models.explaination import Explanation
-from kinlens.models.classifier import ClassScore, Prediction
-
-from kinlens.utils.encode import ClassEncoder
-
+from kinlens.search import BruteForseSearch
+from kinlens.voting import InverseDistance
 
 
 class Classifier:
@@ -40,7 +34,7 @@ class Classifier:
 
 
 
-    def fit(self, dataset: Dataset) -> "Classifier":
+    def fit(self, dataset: Dataset) -> Classifier:
         self.dataset = dataset
         self.search = self.search.fit(dataset)
         return self
@@ -129,7 +123,6 @@ if __name__ == "__main__":
     import numpy as np
 
     from kinlens.metrics import Euclidean
-    from kinlens.models.voting import VotingResult
     from kinlens.search import BruteForseSearch
     from kinlens.utils.dataset import DatasetBuilder
     from kinlens.voting import InverseDistance
