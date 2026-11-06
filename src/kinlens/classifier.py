@@ -22,20 +22,21 @@ from kinlens.models.classifier import ClassScore, Prediction
 
 from kinlens.utils.encode import ClassEncoder
 
-search = BruteForseSearch(metric=Euclidean())
+
 
 class Classifier:
     def __init__(
             self, k: int,
-            search: Search = search,
             metric: DistanceMetric = Euclidean(),
-            voting: Voting = InverseDistance()
+            voting: Voting = InverseDistance(),
+            search: Search | None = None,
+            
                  ) -> None:
         
         self.k = k
         self.metric = metric
-        self.search = search
         self.voting = voting
+        self.search = search if search is not None else BruteForseSearch(self.metric)
 
 
 
@@ -52,56 +53,71 @@ class Classifier:
         neighborClasses = self.dataset.y[searchResult.indices]
         votingResult = self.voting.weight(result=searchResult)
         scores = self.calculateClassScores(classes=neighborClasses, weights=votingResult.weights)
-        topClasses = self.chooseClass(scores=scores)
 
-        prediction = topClasses[0][0]
+        prediction = self.chooseClass(scores=scores)
 
-        totalScores = sum(scores.scores)
-
-        confidence: float = (scores.scores[np.where(scores.classes == prediction)[0][0]] / totalScores if totalScores > 0 else 0.0) #type: ignore
+        totalScores = float(np.sum(scores.scores))
+        if totalScores <= 0.0:
+            confidence = 0.0
+        else:
+            predictionIndex = np.where(scores.classes == prediction)[0]
+            confidence = (
+                float(scores.scores[predictionIndex[0]] / totalScores)
+                if predictionIndex.size > 0 else 0.0
+            )
 
         return Explanation(
-            prediction=prediction,
+            prediction=int(prediction),
             distances=searchResult.distances,
             indices=searchResult.indices,
             labels=neighborClasses,
             weights=votingResult.weights,
-            classScore=topClasses[1][0],
+            classScore={
+                int(classCode): float(score)
+                for classCode, score in zip(scores.classes, scores.scores)
+            },
             confidence=confidence,
             query=query
             )
 
 
-    def calculateClassScores(self, classes: np.ndarray | list[str | int], weights: np.ndarray) -> ClassScore:
-        scores: dict[int, float] = {int(label): 0.0 for label in classes}
+    def calculateClassScores(
+        self, classes: np.ndarray | list[int], weights: np.ndarray
+    ) -> ClassScore:
+        scores: dict[int, float] = {
+            classCode: 0.0 for classCode in range(len(self.dataset.classes))
+        }
 
         for label, weight in zip(classes, weights):
             scores[int(label)] += float(weight)
 
-        return ClassScore(classes=np.array(list(scores.keys()), dtype=np.int64), scores=np.array(list(scores.values()), dtype=np.float64))
+        return ClassScore(
+            classes=np.array(list(scores.keys()), dtype=np.int64),
+            scores=np.array(list(scores.values()), dtype=np.float64)
+            )
 
 
 
     def predict(self, query: np.ndarray) -> str:
 
-        choosenClassEncoded: int = self.explain(query=query).prediction
+        chosenClassEncoded: int = int(self.explain(query=query).prediction)
 
-        encodingTable = self.dataset.targetEncodingMap.items()
+        encodingTable = {
+            int(encoded): original
+            for original, encoded in self.dataset.targetEncodingMap.items()
+        }
 
-        decodedClass: str = [original for original, encoded in encodingTable if encoded == choosenClassEncoded][0]
-
-        return decodedClass
-
-
-    def chooseClass(self, scores: ClassScore, top: int = 3) -> np.ndarray:
-
-        highestScoreIndeces: np.ndarray =  np.argsort(scores.scores)[-top:][::-1]
+        return encodingTable.get(chosenClassEncoded, str(chosenClassEncoded))
 
 
-        return np.array([
-        [scores.classes[index] for index in highestScoreIndeces],
-        [scores.scores[index] for index in highestScoreIndeces]
-        ])
+    def chooseClass(self, scores: ClassScore) -> int:
+
+        if scores.scores.size == 0:
+            return 0
+
+        highestScore = float(np.max(scores.scores))
+        tiedIndices = np.flatnonzero(scores.scores == highestScore)
+        return int(scores.classes[tiedIndices[0]])
 
 
 
@@ -120,15 +136,15 @@ if __name__ == "__main__":
 
 
     path = Path(__file__).parent.parent / "kinlens" / "samples" / "sample-larger.csv"
-    builder = DatasetBuilder(path, features=["feature_1", "feature_2"], label="target")
-    dataset = builder.build()
+
+    dataset = DatasetBuilder(path, features=["feature_1", "feature_2"], label="target").build()
+
     searcher = BruteForseSearch(metric=Euclidean())
 
     classifier = Classifier(k=5, search=searcher)
 
     classifier.fit(dataset=dataset)
 
-    prediction = classifier.predict(query=np.array([5.0, -1.0]))
+    explanation = classifier.explain(query=np.array([5.0, -1.0]))
 
-    pprint.pprint(prediction)
-
+    pprint.pprint(explanation)
